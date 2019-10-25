@@ -24,7 +24,7 @@ function MyBC(params) {
 		/* Why is get cartId logic not extracted to a separate fn?
 			 Because if there's no cart, you need an item to start
 			 a new one with. */
-    carts().then(cs => {
+    return carts().then(cs => {
       if (cs.length !== 0) { // if cart already exists, use it
         const cart_endpoint = '/api/storefront/carts/' + cs[0].id + '/items';
       } else {               // if cart doesn't exist, make a new one
