@@ -15,7 +15,7 @@ function MyBC(params) {
     const payload = JSON.stringify({
       'lineItems': [
         {
-        	"productId": Number(productId),
+        	"productId": String(productId),
         	"quantity": Number(quantity)
       	}
     	]
