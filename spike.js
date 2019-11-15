@@ -7,8 +7,7 @@ const promiseTimeout = (ms, promise) => {
     }, ms);
   });
 
-	// Do i need to return this?
-  Promise.race([promise, timeout]);
+  return Promise.race([promise, timeout]);
 }
 
 const handleResponseError = (response) => {
