@@ -57,12 +57,11 @@ class MyBC {
 }
 
 /* returns a string with BC id or nil if no record was found.
-   if err, err content is response object from fetch */
+   if response isn't ok, err content is response.statusText */
 const lookup_id = async(ari_sku) => {
-  // TODO: Convert to async?
   const endpoint = "https://idlookup.aokpower.com/check/";
   const response = await fetch(endpoint+String(ari_sku));
-  if (!response.ok) throw new Error(response);
+  if (!response.ok) throw new Error(response.statusText);
 
   const text = await response.text();
   // response.text should be "" if lookup has no record for that sku
@@ -83,9 +82,8 @@ function addToCartARI(params_str) {
       return obj;
     }, {});
 
-  lookup_id(params.arisku).then(id => {
-    bc.addItem(id)
-  }).catch(err => console.log(err.message))
-
-  // Lookup sku to BC id from custom service
+  // what if params.arisku undefined?
+  lookup_id(params.arisku)
+  .catch(err => {
+  }).then(id => bc.addItem(id))
 }
