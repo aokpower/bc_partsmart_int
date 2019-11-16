@@ -74,7 +74,7 @@ var bc = new MyBC();
 
 // errors if => fn form is used
 function addToCartARI(params_str) {
-  // Convert string input into object
+  // Convert string input into params object
   const params = params_str.split("&")
     .map(param_str => param_str.split("="))
     .reduce((obj, param_pair) => {
