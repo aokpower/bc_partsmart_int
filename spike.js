@@ -10,13 +10,6 @@ const promiseTimeout = (ms, promise) => {
   return Promise.race([promise, timeout]);
 }
 
-const handleResponseError = (response) => {
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-  return response;
-}
-
 // Integration:
 class MyBC {
   carts() {
@@ -63,21 +56,19 @@ class MyBC {
   };
 }
 
-class IdLookup {
-  constructor(config) {
-    this.config = config;
-  }
+/* returns a string with BC id or nil if no record was found.
+   if err, err content is response object from fetch */
+const lookup_id = async(ari_sku) => {
+  // TODO: Convert to async?
+  const endpoint = "https://idlookup.aokpower.com/check/";
+  const response = await fetch(endpoint+String(ari_sku));
+  if (!response.ok) throw new Error(response);
 
-  check(ari_sku) {
-    return new Promise((resolve, reject) => {
-      fetch(this.config.host, this.config.options)
-        .then(handleResponseError)
-        // .then(...
-        // .catch(err => ...
-    });
-  }
+  const text = await response.text();
+  // response.text should be "" if lookup has no record for that sku
+  if (text === "") return null;
+  return text;
 }
-
 
 // Main
 var bc = new MyBC();
@@ -92,7 +83,7 @@ function addToCartARI(params_str) {
       return obj;
     }, {});
 
-  id_lookup(params.arisku).then(id => {
+  lookup_id(params.arisku).then(id => {
     bc.addItem(id)
   }).catch(err => console.log(err.message))
 
