@@ -85,5 +85,8 @@ function addToCartARI(params_str) {
   // what if params.arisku undefined?
   lookup_id(params.arisku)
   .catch(err => {
-  }).then(id => bc.addItem(id))
+    // Err is either response.statusText or NetworkError
+    let message = "Sorry, We couldn't add your item to the cart. We apologize for the inconvinience.\nError: "+err.message+"If you'd like to report this error, please email cooper@aokpowerequipment.com";
+    alert(message);
+  }).then(id => bc.addItem(id));
 }
