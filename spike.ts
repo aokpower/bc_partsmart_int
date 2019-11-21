@@ -18,52 +18,54 @@ const handleResNotOk = (response: Response): Response => {
   return response;
 }
 
+interface StringyObj {
+  [key: string]: string
+}
+
 // Integration:
-class MyBC {
-  carts() {
-    const get_cart_path = '/api/storefront/carts?include=';
-    const base_options = {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'credentials': 'include',
+const carts = (): Promise<Array<StringyObj>> => {
+  const get_cart_path = '/api/storefront/carts?include=';
+  const base_options = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'credentials': 'include',
+    }
+  };
+  return fetch(get_cart_path, base_options)
+    .then(handleResNotOk)
+    .then(r => r.json());
+}
+
+const addItem = async(productId: string, quantity: number) => {
+  const payload = JSON.stringify({
+    'lineItems': [
+      {
+        "productId": String(productId),
+        "quantity": Number(quantity)
       }
-    };
-    return fetch(get_cart_path, base_options)
-      .then(handleResNotOk)
-      .then(r => r.json());
+    ]
+  });
+  /* Why is get cartId logic not extracted to a separate fn?
+      Because if there's no cart, you need an item to start
+      a new one with. */
+  const cs = await carts();
+  let cart_endpoint: string;
+  if (cs.length !== 0) { // if cart already exists, use it
+    cart_endpoint = '/api/storefront/carts/' + cs[0]["id"] + '/items';
+  }
+  else {                 // if cart doesn't exist, make a new one
+    cart_endpoint = '/api/storefront/cart';
   }
 
-  async addItem(productId: string, quantity: number) {
-    const payload = JSON.stringify({
-      'lineItems': [
-        {
-          "productId": String(productId),
-          "quantity": Number(quantity)
-        }
-      ]
-    });
-    /* Why is get cartId logic not extracted to a separate fn?
-        Because if there's no cart, you need an item to start
-        a new one with. */
-    const cs = await this.carts();
-    let cart_endpoint: string;
-    if (cs.length !== 0) { // if cart already exists, use it
-      cart_endpoint = '/api/storefront/carts/' + cs[0]["id"] + '/items';
-    }
-    else {                 // if cart doesn't exist, make a new one
-      cart_endpoint = '/api/storefront/cart';
-    }
-
-    const res = await fetch(cart_endpoint, {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: payload,
-    });
-    handleResNotOk(res);
-    return await res.json();
-  }
+  const res = await fetch(cart_endpoint, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: payload,
+  });
+  handleResNotOk(res);
+  return await res.json();
 }
 
 interface LookupResult {
@@ -83,31 +85,26 @@ const lookup_id = async(ari_sku: string): Promise<LookupResult> => {
 }
 
 // Main
-var bc = new MyBC();
-
-// should either return a success value or error with human readable error.message
-// const tryLookupAndAddItem = async(sku) => { // ...
 
 // errors if => fn form is used
 function addToCartARI(params_str: string): void {
   // Convert string input into params object
-  const params: {} = params_str.split("&")
+  const params: { [index: string]: any } = params_str.split("&")
     .map(param_str => param_str.split("="))
-    .reduce((obj, param_pair) => {
+    .reduce((obj: { [index: string]: any }, param_pair) => {
       obj[param_pair[0]] = param_pair[1];
       return obj;
     }, {});
   
   const quantity: number = Number(params["ariqty"]);
 
-  // extract this to separate async fn logic?
   lookup_id(params["arisku"])
   .then(result => {
     if (!result.exists) {
       throw new Error("This part isn't available in the online store.");
     }
 
-    return bc.addItem(result.id!, quantity);
+    return addItem(result.id!, quantity);
   }).catch(err => {
     let msg = "";
     msg += "Something went wrong when we tried to add this item to the cart: \n";
