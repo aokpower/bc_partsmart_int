@@ -1,3 +1,10 @@
+/* TODO:
+  - [ ] Add better error dialogs (lib?)
+  - [ ] Notify when add to cart (email BC)
+    - [ ] Cart with simple stats (# of items, cart total) in HTML Frame
+  - [?] run addToCartAri in promiseTimeout
+*/
+
 // STATIC INFO
 const phone_number = "1 (844) 587-6937";
 
@@ -105,7 +112,6 @@ function addToCartARI(params_str: string): void {
   lookupId(arisku).then(result => {
     console.log("looking up part"+arisku+"...");
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
-    // TODO: Should addItem in promise timeout?
     console.log("Found "+arisku+", id = "+result.id!);
     return addItem(result.id!, quantity);
   }).catch(err => {
