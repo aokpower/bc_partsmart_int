@@ -1,3 +1,6 @@
+// STATIC INFO
+const phone_number = "1 (844) 587-6937";
+
 // Utility:
 const promiseTimeout = (ms, promise) => {
   let timeout = new Promise((resolve, reject) => {
@@ -8,6 +11,16 @@ const promiseTimeout = (ms, promise) => {
   });
 
   return Promise.race([promise, timeout]);
+}
+
+const handleResNotOk = (response) => {
+  if (!response.ok) throw new Error(response.statusText)
+  return response;
+}
+
+const showAddItemErr = (reason, err) => {
+    alert("Sorry, we couldn't add your item to the cart because "+String(reason)+".\n Error: "+err.message);
+    console.error(err);
 }
 
 // Integration:
@@ -21,7 +34,9 @@ class MyBC {
         'Content-Type': 'application/json'
       }
     };
-    return fetch(get_cart_path, base_options).then(r => r.json());
+    return fetch(get_cart_path, base_options)
+      .then(handleResNotOk)
+      .then(r => r.json());
   };
 
   async addItem(productId, quantity) {
@@ -41,7 +56,7 @@ class MyBC {
     if (cs.length !== 0) { // if cart already exists, use it
       cart_endpoint = '/api/storefront/carts/' + cs[0].id + '/items';
     }
-    else { // if cart doesn't exist, make a new one
+    else {                 // if cart doesn't exist, make a new one
       cart_endpoint = '/api/storefront/cart';
     }
 
@@ -51,17 +66,37 @@ class MyBC {
       headers: { "Content-Type": "application/json" },
       body: payload,
     });
-    // TODO: if res.ok { return await res.json() } else { promise.reject(err)? }
+    handleResNotOk(res);
     return await res.json();
   };
 }
 
-/* returns a string with BC id or nil if no record was found.
-   if response isn't ok, err content is response.statusText */
+interface LookupSuccess {
+  id: string;
+}
+
+interface LookupFailure {
+  reason: string;
+  error: Error;
+}
+
+enum LookupResult {
+  LookupSuccess,
+  LookupFailure
+}
+
 const lookup_id = async(ari_sku) => {
   const endpoint = "https://idlookup.aokpower.com/check/";
-  const response = await fetch(endpoint+String(ari_sku));
-  if (!response.ok) throw new Error(response.statusText);
+  try {
+    const response = await fetch(endpoint+String(ari_sku));
+  } catch (e) {
+    showAddItemErr("the id lookup service couldn't be reached", e);
+    throw e;
+  }
+  if (!response.ok) {
+    showAddItemErr("there was an error with the part lookup service", e);
+    throw e;
+  }
 
   const text = await response.text();
   // response.text should be "" if lookup has no record for that sku
@@ -71,6 +106,18 @@ const lookup_id = async(ari_sku) => {
 
 // Main
 var bc = new MyBC();
+
+showErrorMsg = (reason) => {
+  return (err) => {
+    const msg    = "Sorry, We couldn't add your item to the cart. We apologize for the inconvinience.\n";
+    let reason   = "Reason: " + String(reason) + "\n";
+    const errmsg = "Error: "+err.message+"\nIf you'd like to report this error, please email cooper@aokpowerequipment.com";
+    alert(msg + reason + errmsg);
+  }
+}
+
+// should either return a success value or error with human readable error.message
+// const tryLookupAndAddItem = async(sku) => { // ...
 
 // errors if => fn form is used
 function addToCartARI(params_str) {
@@ -82,11 +129,17 @@ function addToCartARI(params_str) {
       return obj;
     }, {});
 
-  // what if params.arisku undefined?
+  // extract this to separate async fn logic?
   lookup_id(params.arisku)
-  .catch(err => {
-    // Err is either response.statusText or NetworkError
-    let message = "Sorry, We couldn't add your item to the cart. We apologize for the inconvinience.\nError: "+err.message+"If you'd like to report this error, please email cooper@aokpowerequipment.com";
-    alert(message);
-  }).then(id => bc.addItem(id));
+  .then(id => {
+    if (id === null) { // Product in partsmart but not bigcommerce, not available
+      alert("Sorry: This part isn't available in the online store. Try calling us at "+phone_number".");
+      return null;
+    }
+    // TODO: Expects 2 args (find / add quantity)
+    return bc.addItem(id);
+  })
+  .then(response => {
+    // resolve result of bc.addItem
+  });
 }
