@@ -84,18 +84,21 @@ const lookup_id = async(ari_sku: string): Promise<LookupResult> => {
   return { id: result, exists: true };
 }
 
-// Main
-
-// errors if => fn form is used
-function addToCartARI(params_str: string): void {
-  // Convert string input into params object
-  const params: { [index: string]: any } = params_str.split("&")
-    .map(param_str => param_str.split("="))
-    .reduce((obj: { [index: string]: any }, param_pair) => {
+const parseAriParameters = (params_string: string): StringyObj => {
+  return params_string.split("&")
+    .map(param_string => param_string.split("="))
+    .reduce((obj: StringyObj, param_pair) => {
       obj[param_pair[0]] = param_pair[1];
       return obj;
     }, {});
-  
+}
+
+// Main
+
+/* Callback only works if addToCartARI is in traditional
+   javascript "function _name_() ..." syntax */
+function addToCartARI(params_str: string): void {
+  const params = parseAriParameters(params_str);
   const quantity: number = Number(params["ariqty"]);
 
   lookup_id(params["arisku"])
