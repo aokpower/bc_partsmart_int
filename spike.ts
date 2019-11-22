@@ -18,9 +18,7 @@ const handleResNotOk = (response: Response): Response => {
   return response;
 }
 
-interface StringyObj {
-  [key: string]: string
-}
+interface StringyObj { [key: string]: string }
 
 // Integration:
 const carts = (): Promise<Array<StringyObj>> => {
@@ -79,7 +77,6 @@ const lookup_id = async(ari_sku: string): Promise<LookupResult> => {
   if (!response.ok) throw new Error("There was an internal error in the part id lookup service.")
 
   const result = await response.text();
-  // response.text should be "" if lookup has no record for that sku
   if (result === "") return { exists: false };
   return { id: result, exists: true };
 }
@@ -103,9 +100,7 @@ function addToCartARI(params_str: string): void {
 
   lookup_id(params["arisku"])
   .then(result => {
-    if (!result.exists) {
-      throw new Error("This part isn't available in the online store.");
-    }
+    if (!result.exists) throw new Error("This part isn't available in the online store.");
 
     return addItem(result.id!, quantity);
   }).catch(err => {
