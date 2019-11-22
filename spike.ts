@@ -71,7 +71,7 @@ interface LookupResult {
   exists: boolean;
 }
 
-const lookup_id = async(ari_sku: string): Promise<LookupResult> => {
+const lookupId = async(ari_sku: string): Promise<LookupResult> => {
   const endpoint: string = "https://idlookup.aokpower.com/check/";
   const response = await fetch(endpoint+String(ari_sku));
   if (!response.ok) throw new Error("There was an internal error in the part id lookup service.")
@@ -98,7 +98,7 @@ function addToCartARI(params_str: string): void {
   const params = parseAriParameters(params_str);
   const quantity: number = Number(params["ariqty"]);
 
-  lookup_id(params["arisku"])
+  lookupId(params["arisku"])
   .then(result => {
     if (!result.exists) throw new Error("This part isn't available in the online store.");
 
