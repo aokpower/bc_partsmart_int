@@ -20,7 +20,7 @@ const throwIfResNotOk = (response: Response): Response => {
 
 interface StringyObj { [key: string]: string }
 
-// Integration:
+// BigCommerce:
 const carts = (): Promise<Array<StringyObj>> => {
   const get_cart_path = '/api/storefront/carts?include=';
   const base_options = {
@@ -67,6 +67,7 @@ const addItem = async(productId: string, quantity: number) => {
   return await res.json();
 }
 
+// Lookup Service
 interface LookupResult {
   id?: string;
   exists: boolean;
@@ -82,6 +83,7 @@ const lookupId = async(ari_sku: string): Promise<LookupResult> => {
   return { id: result, exists: true };
 }
 
+// ARI PartSmart
 const parseAriParameters = (params_string: string): StringyObj => {
   return params_string.split("&")
     .map(param_string => param_string.split("="))
@@ -91,8 +93,7 @@ const parseAriParameters = (params_string: string): StringyObj => {
     }, {});
 }
 
-// Main
-
+// Callback
 /* Callback only works if addToCartARI is in traditional
    javascript "function _name_() ..." syntax */
 function addToCartARI(params_str: string): void {
