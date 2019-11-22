@@ -13,7 +13,7 @@ const promiseTimeout = (ms: number, promise: Promise<any>): Promise<any> => {
   return Promise.race([promise, timeout]);
 }
 
-const handleResNotOk = (response: Response): Response => {
+const throwIfResNotOk = (response: Response): Response => {
   if (!response.ok) throw new Error(response.statusText)
   return response;
 }
@@ -31,7 +31,7 @@ const carts = (): Promise<Array<StringyObj>> => {
     }
   };
   return fetch(get_cart_path, base_options)
-    .then(handleResNotOk)
+    .then(throwIfResNotOk)
     .then(r => r.json());
 }
 
@@ -62,7 +62,7 @@ const addItem = async(productId: string, quantity: number) => {
     headers: { "Content-Type": "application/json" },
     body: payload,
   });
-  handleResNotOk(res);
+  throwIfResNotOk(res);
   return await res.json();
 }
 
