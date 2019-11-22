@@ -44,12 +44,13 @@ const addItem = async(productId: string, quantity: number) => {
       }
     ]
   });
-  /* Why is get cartId logic not extracted to a separate fn?
-      Because if there's no cart, you need an item to start
-      a new one with. */
+  /* Q: Why is get cartId logic not extracted to a separate fn?
+     A: Because if there's no cart, you need an item to start
+        a new one with. This tightly couples the logic of getting
+        the carts and making a new one if there isn't one. */
   const cs = await carts();
   let cart_endpoint: string;
-  if (cs.length !== 0) { // if cart already exists, use it
+  if (cs.length !== 0) { // if cart already exists, use the first one
     cart_endpoint = '/api/storefront/carts/' + cs[0]["id"] + '/items';
   }
   else {                 // if cart doesn't exist, make a new one
