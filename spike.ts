@@ -99,11 +99,14 @@ const parseAriParameters = (params_string: string): StringyObj => {
 function addToCartARI(params_str: string): void {
   const params = parseAriParameters(params_str);
   const arisku = params["arisku"];
+  console.log("Attempting to add product "+arisku+" to cart.");
   const quantity: number = Number(params["ariqty"]);
 
   lookupId(arisku).then(result => {
+    console.log("looking up part"+arisku+"...");
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
     // TODO: Should addItem in promise timeout?
+    console.log("Found "+arisku+", id = "+result.id!);
     return addItem(result.id!, quantity);
   }).catch(err => {
     let msg = "";
