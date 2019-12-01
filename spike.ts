@@ -1,10 +1,3 @@
-/* TODO:
-  - [ ] Add better error dialogs (lib?)
-  - [ ] Notify when add to cart (email BC)
-    - [ ] Cart with simple stats (# of items, cart total) in HTML Frame
-  - [?] run addToCartAri in promiseTimeout
-*/
-
 // STATIC INFO
 const phone_number = "1 (844) 587-6937";
 
