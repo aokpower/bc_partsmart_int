@@ -106,7 +106,8 @@ function addToCartARI(params_str: string): void {
     console.log("looking up part"+arisku+"...");
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
     console.log("Found "+arisku+", id = "+result.id!);
-    return addItem(result.id!, quantity);
+    return addItem(result.id!, quantity)
+    .then(_ => console.log("Successfully added "+arisku+"to cart."));
   }).catch(err => {
     let msg = "";
     msg += "Something went wrong when we tried to add this item to the cart: \n";
@@ -114,5 +115,5 @@ function addToCartARI(params_str: string): void {
     msg += "We're sorry for the inconvenience, try calling us at "+phone_number+" and we might be able to resolve this issue for you."
     console.error(err);
     alert(msg);
-  })
+  });
 }
