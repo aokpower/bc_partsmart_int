@@ -3,7 +3,7 @@ const phone_number = "1 (844) 587-6937";
 
 // Utility:
 const promiseTimeout = (ms: number, promise: Promise<any>): Promise<any> => {
-  let timeout = new Promise((resolve, reject) => {
+  let timeout = new Promise((_resolve, reject) => {
     let id = setTimeout(() => {
       clearTimeout(id);
       reject('Timed out in '+ms+' ms.');
