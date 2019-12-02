@@ -1,1 +1,1 @@
-tsc -t 'ES2015' spike.ts
+tsc -t 'ES2015' integration.ts
