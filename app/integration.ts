@@ -1,3 +1,14 @@
+// Note: Relies on AlertifyJS library
+// AlertifyJS type declarations
+interface AlertifyJSStatic {
+  success(msg: string): void;
+  error(msg: string): void;
+  alert(msg: string): void;
+}
+
+declare var alertify: AlertifyJSStatic;
+
+
 // STATIC INFO
 const phone_number = "1 (844) 587-6937";
 
@@ -106,14 +117,17 @@ function addToCartARI(params_str: string): void {
     console.log("looking up part"+arisku+"...");
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
     console.log("Found "+arisku+", id = "+result.id!);
-    return addItem(result.id!, quantity)
-    .then(_ => console.log("Successfully added "+arisku+"to cart."));
+    return addItem(result.id!, quantity).then(_ => {
+      const msg = "Successfully added " + arisku + " to cart.";
+      console.log(msg);
+      alertify.success(msg);
+    })
   }).catch(err => {
     let msg = "";
     msg += "Something went wrong when we tried to add this item to the cart: \n";
     msg += err.message + "\n";
     msg += "We're sorry for the inconvenience, try calling us at "+phone_number+" and we might be able to resolve this issue for you."
-    console.error(err);
-    alert(msg);
+    alertify.alert(msg);
+    console.error(msg);
   });
 }
