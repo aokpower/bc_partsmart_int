@@ -1,4 +1,3 @@
 .vscode
-integration.js
-out.html
 tmp/*
+out.html
