@@ -42,6 +42,8 @@
         .fl-g8 { flex: 8; }
         .fl-g9 { flex: 9; }
 
+        .spacer { flex: 1; }
+
         #logo {
             /* use either flex-grow on header els or margin right on logo */
             /* margin-right: auto; */
@@ -50,10 +52,13 @@
 </head>
 <body>
     <header id="myheader" alt="Header">
-        <a href="/" class="fl-g8" id="logo" alt="Home link"> 
-            <img src="https://cdn11.bigcommerce.com/s-7at2sflw42/images/stencil/250x50/aokpower_logo_1547497482__69176.original.png" alt="A-OK Power Equipment" title="A-OK Power Equipment">
+        <span class="spacer"></span>
+        <a href="/" class="fl-g2" id="home-link" alt="Home link">
+            <img id="logo-img" src="https://cdn11.bigcommerce.com/s-7at2sflw42/images/stencil/250x50/aokpower_logo_1547497482__69176.original.png" alt="A-OK Power Equipment" title="A-OK Power Equipment">
         </a>
+        <span class="spacer"></span>
         <a href="#" class="fl-g1" id="cart" alt="Shopping Cart">cart</a>
+        <span class="spacer"></span>
     </header>
     <div class="partstream-container" alt="Parts lookup program container">
         <script type="text/javascript" id="aripartstream" src="//servicesstg.arinet.com/PartStream/?appKey=e1yjrqhUDSkE4iVcuxI2"></script>
