@@ -6,19 +6,66 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>A-OK Power Parts Lookup</title>
     <style>
-        /* ... */
+        .debug-border { border: 1px dotted red; }
+        body { background-color: #24252a; }
+        #partstream-container { background-color: white; }
+
+        #myheader  {
+            display: flex;
+            align-items: flex-center;
+            justify-content: flex-end;
+            color: whitesmoke;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        #myheader a {
+            color: whitesmoke;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease 0s;
+        }
+
+        #myheader a:hover {
+            color: rgb(19.4%, 39.8%, 80%);
+        }
+
+        /* TODO: Define fl-g (flex-grow) classes in media queries, use sm-fl-g\d, md-fl-g\d, etc. */
+        .fl-g1 { flex: 1; }
+        .fl-g2 { flex: 2; }
+        .fl-g3 { flex: 3; }
+        .fl-g4 { flex: 4; }
+        .fl-g5 { flex: 5; }
+        .fl-g6 { flex: 6; }
+        .fl-g7 { flex: 7; }
+        .fl-g8 { flex: 8; }
+        .fl-g9 { flex: 9; }
+
+        .spacer { flex: 1; }
+
+        #logo {
+            /* use either flex-grow on header els or margin right on logo */
+            /* margin-right: auto; */
+        }
     </style>
 </head>
 <body>
-    <div class="partstream-container">
-        <!-- Meant to be copy/pasted into BigCommerce's 'web pages' section with a page using the raw_html section -->
+    <header id="myheader" alt="Header">
+        <span class="spacer"></span>
+        <a href="/" class="fl-g2" id="home-link" alt="Home link">
+            <img id="logo-img" src="https://cdn11.bigcommerce.com/s-7at2sflw42/images/stencil/250x50/aokpower_logo_1547497482__69176.original.png" alt="A-OK Power Equipment" title="A-OK Power Equipment">
+        </a>
+        <span class="spacer"></span>
+        <a href="#" class="fl-g1" id="cart" alt="Shopping Cart">cart</a>
+        <span class="spacer"></span>
+    </header>
+    <div class="partstream-container" alt="Parts lookup program container">
         <script type="text/javascript" id="aripartstream" src="//servicesstg.arinet.com/PartStream/?appKey=e1yjrqhUDSkE4iVcuxI2"></script>
     </div>
-    <footer>
-    </footer>
     <!-- Alertify.js BEGIN -->
     <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
     <!-- Default theme -->
