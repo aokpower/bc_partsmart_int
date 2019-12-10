@@ -18,5 +18,7 @@ file 'out.html': %w[tmp/integration_min.js app/frame.html] do |t|
 end
 CLOBBER << 'out.html'
 
+task compile: 'tmp/integration.js'
+task minify: 'tmp/integration_min.js'
 task build: 'out.html'
 task default: :build
