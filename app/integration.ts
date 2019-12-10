@@ -32,50 +32,76 @@ const throwIfResNotOk = (response: Response): Response => {
 interface StringyObj { [key: string]: string }
 
 // BigCommerce:
-const carts = (): Promise<Array<StringyObj>> => {
-  const get_cart_path = '/api/storefront/carts?include=';
-  const base_options = {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'credentials': 'include',
-    }
-  };
-  return fetch(get_cart_path, base_options)
-    .then(throwIfResNotOk)
-    .then(r => r.json());
-}
+type CartJSON = StringyObj; // more specified type alias
 
-const addItem = async(productId: string, quantity: number) => {
-  const payload = JSON.stringify({
-    'lineItems': [
-      {
+class BCCart {
+  public exists: boolean;
+  private id: string | null;
+  private cart: CartJSON | null;
+  private get_cart_path: string;
+  private carts: Array<CartJSON>;
+
+  /* Call instance methods through here. Constructs a new instance and updates.
+     At the end of the promise chain, the instance should be thrown away. This,
+     along with the private constructor, give at least a weak guarantee of cart
+     data being fresh and prevents a lot of async headaches while enabling some
+     synchronous accessors internally in the chain. */
+  
+  public static async do(): Promise<BCCart> {
+    return (new BCCart).update()
+  }
+
+  private constructor() {
+    this.carts = [];
+    this.cart = null;
+    this.id = null;
+    this.exists = false;
+
+    this.get_cart_path = '/api/storefront/carts?include=';
+  }
+
+  public async update(): Promise<BCCart> {
+    this.carts = await this.get_carts();
+    this.exists = this.carts.length > 0;
+    this.cart = this.carts[0] || null;
+    this.id = this.cart && this.cart["id"] || null;
+    return this;
+  }
+
+  public async addItem(productId: string, quantity: number): Promise<CartJSON> {
+    const payload = JSON.stringify({
+      'lineItems': [{
         "productId": String(productId),
         "quantity": Number(quantity)
-      }
-    ]
-  });
-  /* Q: Why is get cartId logic not extracted to a separate fn?
-     A: Because if there's no cart, you need an item to start
-        a new one with. This tightly couples the logic of getting
-        the carts and making a new one if there isn't one. */
-  const cs = await carts();
-  let cart_endpoint: string;
-  if (cs.length !== 0) { // if cart already exists, use the first one
-    cart_endpoint = '/api/storefront/carts/' + cs[0]["id"] + '/items';
-  }
-  else {                 // if cart doesn't exist, make a new one
-    cart_endpoint = '/api/storefront/cart';
+      }]
+    });
+    let cart_endpoint: string;
+    if (this.exists) { // if cart already exists, use the first one
+      cart_endpoint = '/api/storefront/carts/' + this.id + '/items';
+    } else {              // if cart doesn't exist, make a new one
+      cart_endpoint = '/api/storefront/cart';
+    }
+
+    const res = await fetch(cart_endpoint, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+    });
+    throwIfResNotOk(res);
+    return await res.json();
   }
 
-  const res = await fetch(cart_endpoint, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
-    body: payload,
-  });
-  throwIfResNotOk(res);
-  return await res.json();
+  private get_carts(): Promise<Array<CartJSON>> {
+    return fetch(this.get_cart_path, {
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'credentials': 'include',
+      }
+    }).then(throwIfResNotOk)
+      .then(r => r.json());
+  }
 }
 
 // Lookup Service
@@ -117,10 +143,12 @@ function addToCartARI(params_str: string): void {
     console.log("looking up part"+arisku+"...");
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
     console.log("Found "+arisku+", id = "+result.id!);
-    return addItem(result.id!, quantity).then(_ => {
-      const msg = "Successfully added " + arisku + " to cart.";
-      console.log(msg);
-      alertify.success(msg);
+    return BCCart.do().then(cart => {
+      return cart.addItem(result.id!, quantity).then(_ => {
+        const msg = "Successfully added " + arisku + " to cart.";
+        console.log(msg);
+        alertify.success(msg);
+      })
     })
   }).catch(err => {
     let msg = "";
