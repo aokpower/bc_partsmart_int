@@ -69,7 +69,7 @@ class BCCart {
     return this;
   }
 
-  public async addItem(productId: string, quantity: number): Promise<CartJSON> {
+  public async addItems(productId: string, quantity: number): Promise<CartJSON> {
     const payload = JSON.stringify({
       'lineItems': [{
         "productId": String(productId),
@@ -145,7 +145,7 @@ function addToCartARI(params_str: string): void {
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
     console.log("Found "+arisku+", id = "+result.id!);
     return BCCart.do().then(cart => {
-      return cart.addItem(result.id!, quantity).then(_ => {
+      return cart.addItems(result.id!, quantity).then(_ => {
         const msg = "Successfully added " + arisku + " to cart.";
         console.log(msg);
         alertify.success(msg);
