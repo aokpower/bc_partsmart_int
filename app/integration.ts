@@ -140,7 +140,7 @@ function addToCartARI(params_str: string): void {
   const quantity: number = Number(params["ariqty"]);
 
   lookupId(arisku).then(result => {
-    console.log("looking up part"+arisku+"...");
+    console.log("looking up part "+arisku+"...");
     if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
     console.log("Found "+arisku+", id = "+result.id!);
     return BCCart.do().then(cart => {
@@ -154,7 +154,7 @@ function addToCartARI(params_str: string): void {
     let msg = "";
     msg += "Something went wrong when we tried to add this item to the cart: \n";
     msg += err.message + "\n";
-    msg += "We're sorry for the inconvenience, try calling us at "+phone_number+" and we might be able to resolve this issue for you."
+    msg += "We're sorry for the inconvenience, try calling us at " + phone_number + " and we might be able to resolve this issue for you."
     alertify.alert(msg);
     console.error(msg);
   });
