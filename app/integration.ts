@@ -48,7 +48,7 @@ class BCCart {
      data being fresh and prevents a lot of async headaches while enabling some
      synchronous accessors internally in the chain. */
 
-  public static async do(): Promise<BCCart> {
+  public static async use(): Promise<BCCart> {
     return (new BCCart).update()
   }
 
@@ -155,7 +155,7 @@ async function addToCartARI(params_str: string): Promise<any> {
     if (!result.exists) throw Lookup.partNotAvailErr(arisku);
     console.log("Found " + arisku + ", id = " + (result.val!));
 
-    const cart = await BCCart.do();
+    const cart = await BCCart.use();
     await cart.addItems((result.val!), quantity);
     const msg = "Successfully added " + arisku + " to cart.";
     console.log(msg);
