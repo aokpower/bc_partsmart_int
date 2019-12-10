@@ -134,29 +134,30 @@ const parseAriParameters = (params_string: string): StringyObj => {
 // Callback
 /* Callback only works if addToCartARI is in traditional
    javascript "function _name_() ..." syntax */
-function addToCartARI(params_str: string): void {
+async function addToCartARI(params_str: string): Promise<any> {
   const params = parseAriParameters(params_str);
   const arisku = params["arisku"];
   console.log("Attempting to add product "+arisku+" to cart.");
-  const quantity: number = Number(params["ariqty"]);
+  const quantity = Number(params["ariqty"]);
 
-  lookupId(arisku).then(result => {
-    console.log("looking up part "+arisku+"...");
-    if (!result.exists) throw new Error("This part ("+arisku+") isn't available in the online store.");
-    console.log("Found "+arisku+", id = "+result.id!);
-    return BCCart.do().then(cart => {
-      return cart.addItems(result.id!, quantity).then(_ => {
-        const msg = "Successfully added " + arisku + " to cart.";
-        console.log(msg);
-        alertify.success(msg);
-      })
-    })
-  }).catch(err => {
-    let msg = "";
-    msg += "Something went wrong when we tried to add this item to the cart: \n";
-    msg += err.message + "\n";
-    msg += "We're sorry for the inconvenience, try calling us at " + phone_number + " and we might be able to resolve this issue for you."
-    alertify.alert(msg);
-    console.error(msg);
-  });
+  try {
+    const result = await lookupId(arisku);
+    console.log("looking up part " + arisku + "...");
+    if (!result.exists)
+      throw new Error("This part (" + arisku + ") isn't available in the online store.");
+    console.log("Found " + arisku + ", id = " + (result.id!));
+    const cart = await BCCart.do();
+    const _ = await cart.addItems((result.id!), quantity);
+    const msg = "Successfully added " + arisku + " to cart.";
+    console.log(msg);
+    alertify.success(msg);
+  }
+  catch (err) {
+    let msg_2 = "";
+    msg_2 += "Something went wrong when we tried to add this item to the cart: \n";
+    msg_2 += err.message + "\n";
+    msg_2 += "We're sorry for the inconvenience, try calling us at " + phone_number + " and we might be able to resolve this issue for you.";
+    alertify.alert(msg_2);
+    console.error(msg_2);
+  }
 }
