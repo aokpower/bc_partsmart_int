@@ -47,7 +47,7 @@ class BCCart {
      along with the private constructor, give at least a weak guarantee of cart
      data being fresh and prevents a lot of async headaches while enabling some
      synchronous accessors internally in the chain. */
-  
+
   public static async do(): Promise<BCCart> {
     return (new BCCart).update()
   }
@@ -105,23 +105,6 @@ class BCCart {
   }
 }
 
-// Lookup Service
-interface LookupResult {
-  id?: string;
-  exists: boolean;
-}
-
-const lookupId = async(ari_sku: string): Promise<LookupResult> => {
-  const endpoint: string = "https://idlookup.aokpower.com/check/";
-  const response = await fetch(endpoint+String(ari_sku));
-  if (!response.ok) throw new Error("There was an internal error in the part id lookup service.")
-
-  const result = await response.text();
-  if (result === "") return { exists: false };
-  return { id: result, exists: true };
-}
-
-// ARI PartSmart
 const parseAriParameters = (params_string: string): StringyObj => {
   return params_string.split("&")
     .map(param_string => param_string.split("="))
@@ -129,6 +112,31 @@ const parseAriParameters = (params_string: string): StringyObj => {
       obj[param_pair[0]] = param_pair[1];
       return obj;
     }, {});
+}
+
+interface Result<T> {
+  val?: T;
+  exists: boolean;
+}
+
+class Lookup {
+   public static async idOfSku(ari_sku: string): Promise<Result<string>> {
+    const endpoint: string = "https://idlookup.aokpower.com/check/";
+    const response = await fetch(endpoint+String(ari_sku));
+    if (!response.ok) throw this.serviceError();
+
+    const result = await response.text();
+    if (result === "") return { exists: false };
+    return { val: result, exists: true };
+  }
+
+  public static serviceError(): Error {
+    return new Error("There was an internal error in the part id lookup service.");
+  }
+
+  public static partNotAvailErr(sku: string): Error {
+    return new Error("This part (" + sku + ") isn't available in the online store.");
+  }
 }
 
 // Callback
@@ -141,13 +149,14 @@ async function addToCartARI(params_str: string): Promise<any> {
   const quantity = Number(params["ariqty"]);
 
   try {
-    const result = await lookupId(arisku);
+    // lookup sku using id_lookup service...
+    const result = await Lookup.idOfSku(arisku);
     console.log("looking up part " + arisku + "...");
-    if (!result.exists)
-      throw new Error("This part (" + arisku + ") isn't available in the online store.");
-    console.log("Found " + arisku + ", id = " + (result.id!));
+    if (!result.exists) throw Lookup.partNotAvailErr(arisku);
+    console.log("Found " + arisku + ", id = " + (result.val!));
+
     const cart = await BCCart.do();
-    const _ = await cart.addItems((result.id!), quantity);
+    await cart.addItems((result.val!), quantity);
     const msg = "Successfully added " + arisku + " to cart.";
     console.log(msg);
     alertify.success(msg);
