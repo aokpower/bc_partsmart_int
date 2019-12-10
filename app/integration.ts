@@ -8,25 +8,26 @@ interface AlertifyJSStatic {
 
 declare var alertify: AlertifyJSStatic;
 
-
 // STATIC INFO
 const phone_number = "1 (844) 587-6937";
 
 // Utility:
-const promiseTimeout = (ms: number, promise: Promise<any>): Promise<any> => {
-  let timeout = new Promise((_resolve, reject) => {
-    let id = setTimeout(() => {
-      clearTimeout(id);
-      reject('Timed out in '+ms+' ms.');
-    }, ms);
-  });
+class Util {
+  public static promiseTimeout(ms: number, promise: Promise<any>): Promise<any> {
+    let timeout = new Promise((_resolve, reject) => {
+      let id = setTimeout(() => {
+        clearTimeout(id);
+        reject('Timed out in '+ms+' ms.');
+      }, ms);
+    });
 
-  return Promise.race([promise, timeout]);
-}
+    return Promise.race([promise, timeout]);
+  }
 
-const throwIfResNotOk = (response: Response): Response => {
-  if (!response.ok) throw new Error(response.statusText)
-  return response;
+  public static throwIfResNotOk(response: Response): Response {
+    if (!response.ok) throw new Error(response.statusText)
+    return response;
+  }
 }
 
 interface StringyObj { [key: string]: string }
@@ -88,7 +89,7 @@ class BCCart {
       headers: { "Content-Type": "application/json" },
       body: payload,
     });
-    throwIfResNotOk(res);
+    Util.throwIfResNotOk(res);
     return await res.json();
   }
 
@@ -99,7 +100,7 @@ class BCCart {
         'content-type': 'application/json',
         'credentials': 'include',
       }
-    }).then(throwIfResNotOk)
+    }).then(Util.throwIfResNotOk)
       .then(r => r.json());
   }
 }
