@@ -105,15 +105,6 @@ class BCCart {
   }
 }
 
-const parseAriParameters = (params_string: string): StringyObj => {
-  return params_string.split("&")
-    .map(param_string => param_string.split("="))
-    .reduce((obj: StringyObj, param_pair) => {
-      obj[param_pair[0]] = param_pair[1];
-      return obj;
-    }, {});
-}
-
 interface Result<T> {
   val?: T;
   exists: boolean;
@@ -139,25 +130,42 @@ class Lookup {
   }
 }
 
+class ARIParams {
+  private params: StringyObj;
+  public sku: string;
+  public quantity: number;
+
+  constructor(params_string: string) {
+    this.params = params_string.split("&")
+      .map(param_string => param_string.split("="))
+      .reduce((obj: StringyObj, param_pair) => {
+        obj[param_pair[0]] = param_pair[1];
+        return obj;
+      }, {});
+
+    this.sku = this.params["arisku"];
+    this.quantity = Number(this.params["ariqty"]);
+  }
+}
+
 // Callback
 /* Callback only works if addToCartARI is in traditional
    javascript "function _name_() ..." syntax */
 async function addToCartARI(params_str: string): Promise<any> {
-  const params = parseAriParameters(params_str);
-  const arisku = params["arisku"];
-  console.log("Attempting to add product "+arisku+" to cart.");
-  const quantity = Number(params["ariqty"]);
-
   try {
-    // lookup sku using id_lookup service...
-    const result = await Lookup.idOfSku(arisku);
-    console.log("looking up part " + arisku + "...");
-    if (!result.exists) throw Lookup.partNotAvailErr(arisku);
-    console.log("Found " + arisku + ", id = " + (result.val!));
+    const params = new ARIParams(params_str);
+    console.log("Attempting to add product " + params.sku + " to cart.");
 
+    // lookup sku using id_lookup service...
+    const result = await Lookup.idOfSku(params.sku);
+    console.log("looking up part " + params.sku + "...");
+    if (!result.exists) throw Lookup.partNotAvailErr(params.sku);
+    console.log("Found " + params.sku + ", id = " + (result.val!));
+
+    // Add to cart
     const cart = await BCCart.use();
-    await cart.addItems((result.val!), quantity);
-    const msg = "Successfully added " + arisku + " to cart.";
+    await cart.addItems((result.val!), params.quantity);
+    const msg = "Successfully added " + params.sku + " to cart.";
     console.log(msg);
     alertify.success(msg);
   }
