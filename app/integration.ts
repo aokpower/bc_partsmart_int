@@ -3,7 +3,7 @@
 interface AlertifyJSStatic {
   success(msg: string): void;
   error(msg: string): void;
-  alert(msg: string): void;
+  alert(title: string, msg: string): void;
 }
 
 declare var alertify: AlertifyJSStatic;
@@ -169,11 +169,10 @@ async function addToCartARI(params_str: string): Promise<any> {
     console.log(msg);
     alertify.success(msg);
   } catch (err) {
-    let err_msg = "";
-    err_msg += "Something went wrong when we tried to add this item to the cart: \n";
+    let err_msg = "We couldn't add your item to the cart because: ";
     err_msg += err.message + "\n";
     err_msg += "We're sorry for the inconvenience, try calling us at " + phone_number + ".";
-    alertify.alert(err_msg);
+    alertify.alert("Something went wrong!", err_msg);
     console.error(err_msg);
   }
 }
