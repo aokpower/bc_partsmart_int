@@ -168,13 +168,12 @@ async function addToCartARI(params_str: string): Promise<any> {
     const msg = "Successfully added " + params.sku + " to cart.";
     console.log(msg);
     alertify.success(msg);
-  }
-  catch (err) {
-    let msg_2 = "";
-    msg_2 += "Something went wrong when we tried to add this item to the cart: \n";
-    msg_2 += err.message + "\n";
-    msg_2 += "We're sorry for the inconvenience, try calling us at " + phone_number + " and we might be able to resolve this issue for you.";
-    alertify.alert(msg_2);
-    console.error(msg_2);
+  } catch (err) {
+    let err_msg = "";
+    err_msg += "Something went wrong when we tried to add this item to the cart: \n";
+    err_msg += err.message + "\n";
+    err_msg += "We're sorry for the inconvenience, try calling us at " + phone_number + ".";
+    alertify.alert(err_msg);
+    console.error(err_msg);
   }
 }
