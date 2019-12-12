@@ -33,21 +33,30 @@ class Util {
 interface StringyObj { [key: string]: string }
 
 // BigCommerce:
-type CartJSON = StringyObj; // more specified type alias
+interface CartObj {
+  id: string;
+  lineItems: {
+    [key: string]: Array<ItemObj>;
+  }
+}
+
+interface ItemObj {
+  name: string;
+  quantity: number;
+}
 
 class BCCart {
   public exists: boolean;
+  private cart: CartObj | null;
   private id: string | null;
-  private cart: CartJSON | null;
   private get_cart_path: string;
-  private carts: Array<CartJSON>;
+  private carts: Array<CartObj>;
 
   /* Call instance methods through here. Constructs a new instance and updates.
      At the end of the promise chain, the instance should be thrown away. This,
      along with the private constructor, give at least a weak guarantee of cart
      data being fresh and prevents a lot of async headaches while enabling some
      synchronous accessors internally in the chain. */
-
   public static async use(): Promise<BCCart> {
     return (new BCCart).update()
   }
@@ -65,7 +74,7 @@ class BCCart {
     this.carts = await this.get_carts();
     this.exists = this.carts.length > 0;
     this.cart = this.carts[0] || null;
-    this.id = this.cart && this.cart["id"] || null;
+    this.id = this.exists && this.cart.id || null;
     return this;
   }
 
@@ -93,7 +102,7 @@ class BCCart {
     return await res.json();
   }
 
-  private get_carts(): Promise<Array<CartJSON>> {
+  private get_carts(): Promise<Array<CartObj>> {
     return fetch(this.get_cart_path, {
       headers: {
         'accept': 'application/json',
