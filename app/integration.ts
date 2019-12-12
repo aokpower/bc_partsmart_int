@@ -82,7 +82,7 @@ class BCCart {
     return this;
   }
 
-  public async addItems(productId: string, quantity: number): Promise<CartJSON> {
+  public async addItems(productId: string, quantity: number): Promise<BCCart> {
     const payload = JSON.stringify({
       'lineItems': [{
         "productId": String(productId),
@@ -103,7 +103,7 @@ class BCCart {
       body: payload,
     });
     Util.throwIfResNotOk(res);
-    return await res.json();
+    return await this.update()
   }
 
   private count_items(): number {
