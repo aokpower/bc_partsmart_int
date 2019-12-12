@@ -160,15 +160,21 @@ class ARIParams {
   public quantity: number;
 
   constructor(params_string: string) {
-    this.params = params_string.split("&")
-      .map(param_string => param_string.split("="))
-      .reduce((obj: StringyObj, param_pair) => {
-        obj[param_pair[0]] = param_pair[1];
-        return obj;
-      }, {});
+    try {
+      this.params = params_string.split("&")
+        .map(param_string => param_string.split("="))
+        .reduce((obj: StringyObj, param_pair) => {
+          obj[param_pair[0]] = param_pair[1];
+          return obj;
+        }, {});
 
-    this.sku = this.params["arisku"];
-    this.quantity = Number(this.params["ariqty"]);
+      this.sku = this.params["arisku"];
+      this.quantity = Number(this.params["ariqty"]);
+    } catch (err) { throw ARIParams.couldntParseError; }
+  }
+
+  private static couldntParseError(): Error {
+    return new Error("Couldn't parse ARI parameters");
   }
 }
 
