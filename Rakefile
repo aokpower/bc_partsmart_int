@@ -2,7 +2,7 @@ require 'rake/clean'
 
 file 'tmp/integration.js': %w[app/integration.ts] do |t|
     # npm install -g ts
-    sh *%w[tsc -t es2015 --outFile] + [t.name, t.prerequisites[0]]
+    sh "tsc"
 end
 CLEAN << 'tmp/integration.js'
 
