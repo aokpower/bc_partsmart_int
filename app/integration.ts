@@ -1,5 +1,9 @@
-// Note: Relies on AlertifyJS library
+// TODO: Split into modules
+
+// Note: Relies on AlertifyJS library being required outside of js context
+// i.e. in the final html output using <script src="..."
 // AlertifyJS type declarations
+// TODO: fill in optional parameter type dec.s for alertify functions
 interface AlertifyJSStatic {
   success(msg: string): void;
   error(msg: string): void;
@@ -45,6 +49,7 @@ interface ItemObj {
   quantity: number;
 }
 
+// TODO?: BCCart superclass, NoneBCCart, JustBCCart?
 class BCCart {
   public exists: boolean;
   public item_count!: number;
@@ -129,6 +134,7 @@ class BCCart {
   }
 }
 
+// bare bones result type to avoid ext. dependency
 interface Result<T> {
   val?: T;
   exists: boolean;
@@ -179,7 +185,7 @@ class ARIParams {
   }
 }
 
-// Callback
+// ARI PartSmart add to cart Callback
 /* Callback only works if addToCartARI is in traditional
    javascript "function _name_() ..." syntax */
 async function addToCartARI(params_str: string): Promise<any> {
