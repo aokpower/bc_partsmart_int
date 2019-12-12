@@ -47,6 +47,9 @@ interface ItemObj {
 
 class BCCart {
   public exists: boolean;
+  public item_count!: number;
+  /* item_count is !'d because I'd rather it error if somehow it's called before
+     update() is complete then just silently be wrong */
   private cart: CartObj | null;
   private id: string | null;
   private get_cart_path: string;
@@ -75,6 +78,7 @@ class BCCart {
     this.exists = this.carts.length > 0;
     this.cart = this.carts[0] || null;
     this.id = this.exists && this.cart.id || null;
+    this.item_count = this.count_items();
     return this;
   }
 
@@ -100,6 +104,13 @@ class BCCart {
     });
     Util.throwIfResNotOk(res);
     return await res.json();
+  }
+
+  private count_items(): number {
+    if (!this.exists) throw new Error("Undeclared Error"); // TODO
+    const li = this.cart!.lineItems;
+    const items = [li.physicalItems, li.customItems, li.digitalItems].flat();
+    return items.reduce((count, item) => item.quantity + count, 0);
   }
 
   private get_carts(): Promise<Array<CartObj>> {
