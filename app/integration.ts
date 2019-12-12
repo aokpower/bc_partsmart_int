@@ -149,7 +149,8 @@ class Lookup {
     return new Error("There was an internal error in the part id lookup service.");
   }
 
-  public static partNotAvailErr(sku: string): Error {
+  // SMELL: Too much business logic here
+  public static partNotAvailError(sku: string): Error {
     return new Error("This part (" + sku + ") isn't available in the online store.");
   }
 }
@@ -189,7 +190,7 @@ async function addToCartARI(params_str: string): Promise<any> {
     // lookup sku using id_lookup service...
     const result = await Lookup.idOfSku(params.sku);
     console.log("looking up part " + params.sku + "...");
-    if (!result.exists) throw Lookup.partNotAvailErr(params.sku);
+    if (!result.exists) throw Lookup.partNotAvailError(params.sku);
     console.log("Found " + params.sku + ", id = " + (result.val!));
 
     // Add to cart
