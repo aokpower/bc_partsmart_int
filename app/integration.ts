@@ -107,7 +107,7 @@ class BCCart {
   }
 
   private count_items(): number {
-    if (!this.exists) throw new Error("Undeclared Error"); // TODO
+    if (!this.exists) throw BCCart.noCartError("counting items");
     const li = this.cart!.lineItems;
     const items = [li.physicalItems, li.customItems, li.digitalItems].flat();
     return items.reduce((count, item) => item.quantity + count, 0);
@@ -122,6 +122,10 @@ class BCCart {
       }
     }).then(Util.throwIfResNotOk)
       .then(r => r.json());
+  }
+
+  private static noCartError(action = "this action"): Error {
+    return new Error("No cart available for " + action + ".");
   }
 }
 
