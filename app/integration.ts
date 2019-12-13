@@ -185,6 +185,24 @@ class ARIParams {
   }
 }
 
+class MyPage {
+  public static async updateCartCount(n: number): Promise<void> {
+    try {
+      const el = document.getElementById("cart-item-count");
+      if (el === null) throw MyPage.cartNotFoundError();
+      el.textContent = String(n);
+    } catch (err) {
+      const msg = "Cart count couldn't be updated because: " + err.message + ".";
+      alertify.error(msg);
+      console.error(msg);
+    }
+  }
+
+  private static cartNotFoundError(): Error {
+    return new Error("Can't find cart element");
+  }
+}
+
 // ARI PartSmart add to cart Callback
 /* Callback only works if addToCartARI is in traditional
    javascript "function _name_() ..." syntax */
