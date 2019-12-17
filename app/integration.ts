@@ -117,7 +117,7 @@ class BCCart {
   }
 
   private count_items(): number {
-    if (!this.exists) throw BCCart.noCartError("counting items");
+    if (!this.exists) return 0;
     const li = this.cart!.lineItems;
     const items = [li.physicalItems, li.customItems, li.digitalItems].flat();
     return items.reduce((count, item) => item.quantity + count, 0);
