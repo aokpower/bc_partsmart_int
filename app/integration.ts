@@ -1,3 +1,4 @@
+// Authors: [<Cooper Lebrun cooperlebrun@gmail.com>, <Sammi Sears sammisears1@gmail.com>]
 // TODO: Split into modules
 
 // Note: Relies on AlertifyJS library being required outside of js context
@@ -31,6 +32,10 @@ class Util {
   public static throwIfResNotOk(response: Response): Response {
     if (!response.ok) throw new Error(response.statusText)
     return response;
+  }
+
+  public static babyyodas() {
+    alertify.alert("send me baby yoda pictures pls", "plz");
   }
 }
 
