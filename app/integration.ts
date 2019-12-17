@@ -191,7 +191,11 @@ class ARIParams {
 }
 
 class MyPage {
-  public static async updateCartCount(n: number): Promise<void> {
+  public static async updateCartCount(): Promise<void> {
+    return BCCart.use().then(cart => MyPage.setCartCount(cart.item_count));
+  }
+
+  private static async setCartCount(n: number): Promise<void> {
     try {
       const el = document.getElementById("cart-item-count");
       if (el === null) throw MyPage.cartNotFoundError();
@@ -225,6 +229,7 @@ async function addToCartARI(params_str: string): Promise<any> {
     // Add to cart
     const cart = await BCCart.use();
     await cart.addItems((result.val!), params.quantity);
+    MyPage.updateCartCount();
     const msg = "Successfully added " + params.sku + " to cart.";
     console.log(msg);
     alertify.success(msg);
@@ -236,3 +241,5 @@ async function addToCartARI(params_str: string): Promise<any> {
     console.error(err_msg);
   }
 }
+
+MyPage.updateCartCount();
