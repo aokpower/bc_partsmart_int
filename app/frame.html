@@ -28,6 +28,32 @@
             list-style: none;
         }
 
+        .link {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #mynavbar {
+            font-family: Barlow,Arial,Helvetica,sans-serif;
+            text-align: left;
+            justify-content: space-between;
+            margin-right: auto;
+            width: 90%;
+            margin-left: auto;
+        }
+
+        .mynavbar-link {
+            color: whitesmoke;
+            margin-right: 1.725rem;
+            margin-right: 1.725rem;
+            font-weight: 400;
+        }
+
+        #mynavbar-endspacer {
+            order: 1;
+            margin-right: auto;
+        }
+
         .header-link {
             color: whitesmoke;
             text-decoration: none;
@@ -57,7 +83,16 @@
             </li>
             <li><span id="cart-item-count" class="red">0</span></li>
         </ul>
-    </div>   
+    </div>
+    <div id="mynavbar" class="container">
+        <a class="link mynavbar-link" href="/parts_lookup">PARTS LOOKUP</a>
+        <a class="link mynavbar-link" href="/brands">BRANDS</a>
+        <a class="link mynavbar-link" href="/about-us">ABOUT US</a>
+        <a class="link mynavbar-link" href="/contact">CONTACT</a>
+        <a class="link mynavbar-link" href="/shipping-returns">SHIPPING & RETURNS</a>
+        <span id="mynavbar-endspacer"></span>
+    </div>
+   
     <div id="partstream-container" alt="Parts lookup program container">
         <script type="text/javascript" id="aripartstream" src="//servicesstg.arinet.com/PartStream/?appKey=e1yjrqhUDSkE4iVcuxI2"></script>
     </div>
