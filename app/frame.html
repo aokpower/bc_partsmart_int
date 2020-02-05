@@ -38,10 +38,16 @@
         .header-link:hover {
             color: rgb(19.4%, 39.8%, 80%);
         }
+
+        #partstream-container {
+            width: 90%;
+            max-width: 0 auto;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
-    <header id="myheader" alt="Header" class="container">
+    <div id="myheader" alt="Header" class="container">
         <a href="/" class="header-link" id="home-link" alt="Home link">
             <img id="logo-img" src="https://cdn11.bigcommerce.com/s-7at2sflw42/images/stencil/250x50/aokpower_logo_1547497482__69176.original.png" alt="A-OK Power Equipment" title="A-OK Power Equipment">
         </a>
@@ -51,8 +57,8 @@
             </li>
             <li><span id="cart-item-count" class="red">0</span></li>
         </ul>
-    </header>
-    <div class="partstream-container" alt="Parts lookup program container">
+    </div>   
+    <div id="partstream-container" alt="Parts lookup program container">
         <script type="text/javascript" id="aripartstream" src="//servicesstg.arinet.com/PartStream/?appKey=e1yjrqhUDSkE4iVcuxI2"></script>
     </div>
     <!-- Alertify.js BEGIN -->
