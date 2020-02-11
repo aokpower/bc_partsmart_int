@@ -33,6 +33,18 @@
             cursor: pointer;
         }
 
+        .pill {
+            background: red;
+            border: none;
+            padding: 3px 18px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 16px;
+        }
+
         #mynavbar {
             font-family: Barlow,Arial,Helvetica,sans-serif;
             text-align: left;
@@ -87,7 +99,7 @@
             <li>
                 <a href="/cart.php" class="header-link" id="cart" alt="Shopping Cart">Cart</a>
             </li>
-            <li><span id="cart-item-count" class="red">0</span></li>
+            <li class="pill"><span id="cart-item-count">0</span></li>
         </ul>
     </div>
     <div id="mynavbar" class="container">
